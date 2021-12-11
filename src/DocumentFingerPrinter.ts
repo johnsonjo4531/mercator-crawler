@@ -5,7 +5,7 @@ import { AsyncSet } from "./utils/AsyncSet";
 function checksum(
   str: string,
   algorithm?: string,
-  encoding?: crypto.HexBase64Latin1Encoding
+  encoding?: crypto.BinaryToTextEncoding
 ) {
   return crypto
     .createHash(algorithm || "sha256")

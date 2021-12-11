@@ -1,10 +1,29 @@
 # Mercator Crawler
 
-Provides a URL-frontier, MetaData fetcher, URL Deduper, and is very plug and play friendly 😄
+Provides a URL-frontier, MetaData fetcher, URL Deduper, and is very plug and play friendly 😄.
+
+To run the default Mercator Crawler with no options:
+
+```js
+import { Mercator } from "mercator-crawler";
+
+(async () => {
+	const mercator = new Mercator();
+
+	// do not await this seedURL. You can only await it after you have called runToCompletion or iterated through all the data sent back.
+	mercator.seedURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
+		console.log(x);
+	});
+
+	await mercator.runToCompletion();
+})();
+```
 
 ## URL Frontier
 
 A URL Frontier's job is to provide preference and politeness.
+
+Currently there is very little preference built-in (you could provide your own through the MercatorSettings).
 
 ## Metadata fetcher
 

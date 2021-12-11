@@ -169,6 +169,7 @@ export async function scrapeMeta(
 		};
 	} catch (err) {
 		console.error(err);
-		throw new Error("Error scraping article");
+		throw err;
+		// throw new Error("Error scraping article");
 	}
 }

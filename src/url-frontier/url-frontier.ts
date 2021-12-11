@@ -124,7 +124,7 @@ export class URLFrontier {
 		return url;
 	}
 
-	async sendURL(url: Link) {
+	async seedURL(url: Link) {
 		const _url = new URL(url).href;
 		let result!: Promise<{
 			url: string;
@@ -137,7 +137,7 @@ export class URLFrontier {
 				cached: true,
 			}));
 		} else {
-			const temp = this._sendURL(_url);
+			const temp = this._seedURL(_url);
 			result = temp.then((url) => ({
 				url,
 				cached: false,
@@ -147,7 +147,13 @@ export class URLFrontier {
 		return result;
 	}
 
-	private async _sendURL(url: Link) {
+	async sendURL(url: Link) {
+		const result = this.seedURL(url);
+		await Promise.race([result, this.runToCompletion()]);
+		return result;
+	}
+
+	private async _seedURL(url: Link) {
 		const result = this.#awaitURLs.take(new URL(url).href);
 		this.#incomingURLs.enqueue(url);
 		return result;

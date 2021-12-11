@@ -34,45 +34,45 @@ import { GTORAsyncQueue } from "./GTOR";
 * })();
 */
 export class AsyncQueue<T> {
-    /** A hash tells you this field is private.
-     * Right now the underlying queue is part of the
-     * instance but since enqueue, dequeue, etc, are all async
-     * the queue could be in a different location such as redis.
-    */
-   #queue = new GTORAsyncQueue<T>();
+	/** A hash tells you this field is private.
+	 * Right now the underlying queue is part of the
+	 * instance but since enqueue, dequeue, etc, are all async
+	 * the queue could be in a different location such as redis.
+	 */
+	#queue = new GTORAsyncQueue<T>();
 
-    /** This method allows to take from the queue. */
-    async dequeue() {
-        return this.#queue.take();
-    }
+	/** This method allows to take from the queue. */
+	async dequeue() {
+		return this.#queue.take();
+	}
 
-    /** This method allows to add to the queue. */
-    async enqueue(item: T) {
-        return this.#queue.put(item);
-    }
+	/** This method allows to add to the queue. */
+	async enqueue(item: T) {
+		return this.#queue.put(item);
+	}
 
-    async size () {
-        return this.#queue.length;
-    }
+	async size() {
+		return this.#queue.length;
+	}
 
-    /** This method creates a queue from an Iterable. 
-     * It is async because the items take time to enqueue 
-     **/
-    static async from<T>(items: Iterable<T>) {
-        const queue = new AsyncQueue<T>();
-        const promises = [];
-        for (const item of items) {
-            promises.push(queue.enqueue(item));
-        }
-        await Promise.all(promises);
-        return queue;
-    }
+	/** This method creates a queue from an Iterable.
+	 * It is async because the items take time to enqueue
+	 **/
+	static async from<T>(items: Iterable<T>) {
+		const queue = new AsyncQueue<T>();
+		const promises = [];
+		for (const item of items) {
+			promises.push(queue.enqueue(item));
+		}
+		await Promise.all(promises);
+		return queue;
+	}
 
-    [Symbol.asyncIterator] () {
-        return this.#queue[Symbol.asyncIterator]();
-    }
+	[Symbol.asyncIterator]() {
+		return this.#queue[Symbol.asyncIterator]();
+	}
 }
 
 class RedisQueue<T> extends AsyncQueue<T> {
-    // TODO: implement a redis AsyncQueue.
+	// TODO: implement a redis AsyncQueue.
 }

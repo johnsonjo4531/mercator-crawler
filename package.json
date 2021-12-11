@@ -1,12 +1,12 @@
 {
   "scripts": {
     "start": "npm run build && node dist/mercator.js",
-    "build": "tsc",
+    "build": "tsc && prettier --write ./src/**/*",
     "test": "npm run build && jest"
   },
   "dependencies": {
     "@types/heap": "^0.2.28",
-    "@types/node": "^14.14.10",
+    "@types/node": "^16.11.12",
     "entities": "^2.2.0",
     "got": "^11.8.1",
     "heap": "^0.2.6",
@@ -23,6 +23,7 @@
     "@types/jest": "^27.0.2",
     "babel-jest": "^27.3.1",
     "jest": "^27.3.1",
+    "prettier": "2.5.1",
     "ts-node": "^10.4.0"
   },
   "name": "mercator-crawler",

@@ -1,1 +1,1 @@
-declare module 'readabilitySAX';
+declare module "readabilitySAX";
