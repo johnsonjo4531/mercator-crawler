@@ -20,30 +20,28 @@ const defaultMercatorSettings: MercatorSettings<ReturnType<typeof scrapeMeta>> =
 		dataFetcher: scrapeMeta,
 	} as const;
 
-export class Mercator<T> {
-	#settings!: MercatorSettings<Promise<T> | ReturnType<typeof scrapeMeta>>;
-	#inFrontierCache: Map<
-		string,
-		Promise<T | DePromisify<ReturnType<typeof scrapeMeta>>>
-	> = new Map();
-	#fetchingData: Map<
-		string,
-		Promise<T | DePromisify<ReturnType<typeof scrapeMeta>>>
-	> = new Map();
+export class Mercator<
+	T extends DePromisify<ReturnType<typeof scrapeMeta>> | Record<any, any>,
+	Settings extends MercatorSettings<Promise<T>>
+> {
+	#settings!: Settings;
+	#inFrontierCache: Map<string, Promise<T>> = new Map();
+	#fetchingData: Map<string, Promise<T>> = new Map();
 
-	constructor(settings: Partial<MercatorSettings<Promise<T>>> = {}) {
-		if (settings.dataFetcher) {
+	constructor(settings?: Partial<MercatorSettings<Promise<T>>>) {
+		if (settings?.dataFetcher && "dataFetcher" in settings) {
 			this.#settings = {
 				...defaultMercatorSettings,
-				dataFetcher: settings.dataFetcher,
 				...settings,
-			};
+				dataFetcher: settings.dataFetcher,
+			} as any;
 		} else {
 			this.#settings = {
 				...defaultMercatorSettings,
 				...settings,
-				dataFetcher: defaultMercatorSettings.dataFetcher,
-			};
+				dataFetcher:
+					settings?.dataFetcher ?? defaultMercatorSettings.dataFetcher,
+			} as any;
 		}
 	}
 
@@ -62,7 +60,7 @@ export class Mercator<T> {
 					.then(({ url }) => {
 						return this.#getData(url);
 					})
-					.then((x: any) => {
+					.then((x) => {
 						this.#inFrontierCache.delete(url);
 						return x;
 					})
@@ -82,7 +80,7 @@ export class Mercator<T> {
 		yield* this.#fetchURLs();
 	}
 
-	async #getData(url: string): Promise<T | ReturnType<typeof scrapeMeta>> {
+	async #getData(url: string) {
 		if (!this.#fetchingData.get(url)) {
 			this.#fetchingData.set(
 				url,

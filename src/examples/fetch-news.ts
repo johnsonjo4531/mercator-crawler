@@ -9,7 +9,7 @@ import { Mercator } from "../mercator";
 			"https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641"
 		)
 		.then((x) => {
-			console.log(x);
+			console.log(x.articleBody);
 		});
 
 	await mercator.runToCompletion();

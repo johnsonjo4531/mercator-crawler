@@ -19,6 +19,21 @@ import { Mercator } from "mercator-crawler";
 })();
 ```
 
+Example 2:
+
+```js
+import { Mercator } from "mercator-crawler";
+
+(async () => {
+	const mercator = new Mercator();
+
+	// The sendURL can be awaited as it automatically runs to completion.
+	await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
+		console.log(x);
+	});
+})();
+```
+
 ## URL Frontier
 
 A URL Frontier's job is to provide preference and politeness.
