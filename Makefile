@@ -8,4 +8,4 @@ release-minor:
 	npm version minor && $(MAKE) push-publish
 
 push-publish:
-	git push --all && npm publish dist
+	git push --all && npm publish ./dist
