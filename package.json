@@ -27,8 +27,8 @@
     "ts-node": "^10.4.0"
   },
   "name": "mercator-crawler",
-  "version": "1.0.2",
-	"types": "./dist/mercator.d.ts",
+  "version": "1.0.3",
+  "types": "./dist/mercator.d.ts",
   "description": "A Mercator crawler with url-frontier, url-set, meta-data fetcher, etc. inspired by the Stanford Information Retrieval book",
   "main": "./dist/mercator.js",
   "repository": "git@github.com:johnsonjo4531/url-frontier.git",
