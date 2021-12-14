@@ -95,9 +95,9 @@ export const defaultURLFrontierSettings: URLFrontierSettings = {
 } as const;
 
 export class URLFrontier {
-	#backQueue!: BackQueue;
-	#frontQueue!: FrontQueue;
-	settings!: URLFrontierSettings;
+	#backQueue: BackQueue = new Map();
+	#frontQueue: FrontQueue = [];
+	settings: URLFrontierSettings = defaultURLFrontierSettings;
 	#awaitURLs = new AsyncMap<Link, Link>();
 	#hostnameHeap = new HostnameHeap();
 	#incomingURLs = new AsyncQueue<Link>();

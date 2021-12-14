@@ -1,6 +1,7 @@
 import type { Server } from "http";
 import { Mercator } from "../mercator";
 import { staticServer } from "../utils/crawlable-server";
+import { DePromisify } from "../utils/types";
 
 const serverPorts = [15432, 15431];
 let servers: Server[] = [];
@@ -33,10 +34,12 @@ test("Mercator basic", async () => {
 					rData.push(data);
 				});
 		}
-		const data: any[] = [];
+		const data: DePromisify<ReturnType<Mercator<unknown>["seedURL"]>>[] = [];
 		for await (const datum of mercator) {
 			data.push(datum);
 		}
+		expect(data[0].articleBody).toBeTruthy();
+		expect(data[0].metadata).toBeTruthy();
 		expect(rData).toHaveLength(4);
 		expect(data).toEqual(rData);
 		expect(sameData1).toEqual(sameData2);
@@ -130,6 +133,21 @@ Array [
 	} catch (err) {
 		console.error(err);
 	}
+});
+
+test("Mercator dataFetcher", async () => {
+	const mercator = new Mercator({
+		async dataFetcher() {
+			return { foo: "bar" } as const;
+		},
+	});
+	const data = await mercator.sendURL(
+		`http://localhost:${serverPorts[0]}/index.html`
+	);
+
+	// This also checks our types for us.
+	// Types will fail if this isn't properly done
+	expect(data.foo === "bar").toBeTruthy();
 });
 
 afterAll(() => {

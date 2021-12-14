@@ -1,7 +1,7 @@
-import http from "http";
-import url from "url";
-import fs from "fs";
-import path from "path";
+import * as http from "http";
+import * as url from "url";
+import * as fs from "fs";
+import * as path from "path";
 
 export function staticServer(rootPath: string) {
 	const mimeType: Record<string, string> = {

@@ -2,7 +2,7 @@
 
 Provides a URL-frontier, MetaData fetcher, URL Deduper, and is very plug and play friendly 😄.
 
-To run the default Mercator Crawler with no options:
+To run the default Mercator Crawler with no options (this will fetch metadata and provide a readability like function that grabs the main content/article body):
 
 ```js
 import { Mercator } from "mercator-crawler";
@@ -29,7 +29,22 @@ import { Mercator } from "mercator-crawler";
 
 	// The sendURL can be awaited as it automatically runs to completion.
 	await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
-		console.log(x);
+		console.log(x.articleBody);
+		console.log(x.metadata);
+	});
+})();
+```
+
+```js
+import { Mercator } from "mercator-crawler";
+
+(async () => {
+	const mercator = new Mercator();
+
+	// The sendURL can be awaited as it automatically runs to completion.
+	await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
+		console.log(x.articleBody);
+		console.log(x.metadata);
 	});
 })();
 ```
@@ -47,6 +62,10 @@ Fetches general info about a given url.
 ## URL Deduper
 
 This isn't the technical term, but it basically allows you to stop duplicate urls from entering the URL Frontier at the same time.
+
+## Known Issues
+
+- The `dataFetcher` option currently hangs infinitely 😅😱. So, hopefully It'll be fixed soon 🚀.
 
 ## Resources
 

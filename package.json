@@ -1,8 +1,9 @@
 {
   "scripts": {
     "start": "npm run build && node dist/mercator.js",
-    "build": "tsc && prettier --write ./src/**/*",
-    "test": "npm run build && jest"
+    "build": "prettier --write ./src/**/* && tsc",
+    "test": "npm run build && jest",
+		"prepublish": "npm run build"
   },
   "dependencies": {
     "@types/heap": "^0.2.28",
@@ -22,7 +23,7 @@
     "@babel/preset-typescript": "^7.15.0",
     "@types/jest": "^27.0.2",
     "babel-jest": "^27.3.1",
-    "jest": "^27.3.1",
+    "jest": "^27.4.5",
     "prettier": "2.5.1",
     "ts-node": "^10.4.0"
   },
@@ -31,8 +32,8 @@
   "types": "./dist/mercator.d.ts",
   "description": "A Mercator crawler with url-frontier, url-set, meta-data fetcher, etc. inspired by the Stanford Information Retrieval book",
   "main": "./dist/mercator.js",
-  "repository": "git@github.com:johnsonjo4531/url-frontier.git",
-  "author": "John Johnson II <johnsonjo4531@users.noreply.github.com>",
+  "repository": "git@github.com:johnsonjo4531/mercator-crawler.git",
+  "author": "John Johnson II <johnsonjo4531@gmail.com>",
   "license": "MIT",
   "private": false
 }
