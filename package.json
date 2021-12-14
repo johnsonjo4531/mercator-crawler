@@ -3,7 +3,7 @@
     "start": "npm run build && node dist/mercator.js",
     "build": "prettier --write ./src/**/* && tsc",
     "test": "npm run build && jest",
-		"prepublish": "npm run build"
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "@types/heap": "^0.2.28",
@@ -28,7 +28,7 @@
     "ts-node": "^10.4.0"
   },
   "name": "mercator-crawler",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "types": "./dist/mercator.d.ts",
   "description": "A Mercator crawler with url-frontier, url-set, meta-data fetcher, etc. inspired by the Stanford Information Retrieval book",
   "main": "./dist/mercator.js",
