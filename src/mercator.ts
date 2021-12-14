@@ -73,7 +73,8 @@ export class Mercator<U> {
 	}
 
 	async runToCompletion() {
-		await this.#settings.urlFrontier.runToCompletion();
+		for await (const item of this) {
+		}
 	}
 
 	async *[Symbol.asyncIterator]() {
@@ -81,13 +82,13 @@ export class Mercator<U> {
 	}
 
 	async #getData(url: string) {
-		if (!this.#fetchingData.get(url)) {
+		if (!this.#fetchingData.has(url)) {
 			this.#fetchingData.set(
 				url,
 				this.#settings.dataFetcher(url).then((x) => {
 					this.#fetchingData.delete(url);
 					return x;
-				}) as any
+				})
 			);
 		}
 		return (

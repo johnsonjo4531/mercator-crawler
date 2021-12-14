@@ -152,6 +152,6 @@ test("Mercator dataFetcher", async () => {
 
 afterAll(() => {
 	for (const server of servers) {
-		server.removeAllListeners();
+		server.close();
 	}
 });

@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "preLaunchTask": "npm: build",
-            "program": "${workspaceFolder}/dist/mercator.js",
+            "program": "${workspaceFolder}/dist/examples/fetch-news.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

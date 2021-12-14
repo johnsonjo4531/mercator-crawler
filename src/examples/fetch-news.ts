@@ -8,9 +8,9 @@ import { staticServer } from "../utils/crawlable-server";
 	// setup 2 servers
 	servers.push(staticServer("../../public-test/").listen(serverPorts[0]));
 	const mercator = new Mercator({
-		async dataFetcher() {
-			return { foo: "bar" } as const;
-		},
+		// async dataFetcher() {
+		// 	return { foo: "bar" } as const;
+		// },
 	});
 
 	const data = await mercator.sendURL(
@@ -18,7 +18,9 @@ import { staticServer } from "../utils/crawlable-server";
 	);
 
 	console.log(data);
+
 	for (const server of servers) {
-		server.removeAllListeners();
+		server.close();
 	}
+	console.log("HERE");
 })();
