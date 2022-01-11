@@ -63,10 +63,6 @@ Fetches general info about a given url.
 
 This isn't the technical term, but it basically allows you to stop duplicate urls from entering the URL Frontier at the same time.
 
-## Known Issues
-
-- The `dataFetcher` option currently hangs infinitely 😅😱. So, hopefully It'll be fixed soon 🚀.
-
 ## Resources
 
 Video on web crawling (follows a similar architecture to the IR book): https://www.youtube.com/watch?v=BKZxZwUgL3Y
