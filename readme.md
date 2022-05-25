@@ -28,24 +28,10 @@ import { Mercator } from "mercator-crawler";
 	const mercator = new Mercator();
 
 	// The sendURL can be awaited as it automatically runs to completion.
-	await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
-		console.log(x.articleBody);
-		console.log(x.metadata);
-	});
-})();
-```
-
-```js
-import { Mercator } from "mercator-crawler";
-
-(async () => {
-	const mercator = new Mercator();
-
-	// The sendURL can be awaited as it automatically runs to completion.
-	await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641").then(x => {
-		console.log(x.articleBody);
-		console.log(x.metadata);
-	});
+	const {articleBody, metadata} = await mercator.sendURL("https://www.wsj.com/articles/magnus-carlsen-ian-nepomniachtchi-world-chess-championship-computer-analysis-11639003641");
+	
+	console.log(articleBody);
+	console.log(metadata);
 })();
 ```
 
