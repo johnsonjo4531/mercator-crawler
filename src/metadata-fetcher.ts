@@ -20,7 +20,7 @@ export type TypedLD<T, S = string> = Extract<
 
 export type TypedThing = TypedLD<Thing>;
 
-type WebPageMeta = {
+export type WebPageMeta = {
 	alternate: any[];
 	applinks: {
 		"android:app_name": string;

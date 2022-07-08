@@ -19,14 +19,19 @@ const defaultMercatorSettings: MercatorSettings<ReturnType<typeof scrapeMeta>> =
 
 type F = unknown extends any ? true : false;
 
-type DefaultU = DePromisify<ReturnType<typeof scrapeMeta>>;
+export type DefaultMercatorReturn = DePromisify<ReturnType<typeof scrapeMeta>>;
 export class Mercator<U> {
-	#settings: MercatorSettings<Promise<unknown extends U ? DefaultU : U>> =
-		defaultMercatorSettings as any;
-	#inFrontierCache: Map<string, Promise<unknown extends U ? DefaultU : U>> =
-		new Map();
-	#fetchingData: Map<string, Promise<unknown extends U ? DefaultU : U>> =
-		new Map();
+	#settings: MercatorSettings<
+		Promise<unknown extends U ? DefaultMercatorReturn : U>
+	> = defaultMercatorSettings as any;
+	#inFrontierCache: Map<
+		string,
+		Promise<unknown extends U ? DefaultMercatorReturn : U>
+	> = new Map();
+	#fetchingData: Map<
+		string,
+		Promise<unknown extends U ? DefaultMercatorReturn : U>
+	> = new Map();
 
 	constructor(settings?: Partial<MercatorSettings<Promise<U>>>) {
 		if (settings?.dataFetcher && "dataFetcher" in settings) {
