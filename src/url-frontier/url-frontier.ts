@@ -8,8 +8,8 @@
 import { AsyncMap } from "../utils/AsyncMap";
 import { AsyncQueue } from "../utils/AsyncQueue";
 import { naiveRoundRobinSelector } from "./FrontQueueSelectors";
-import { HostnameHeap } from "./HostnameHeap";
-import { politeByHostname } from "./BackQueueRouter";
+import { HostHeap } from "./HostHeap";
+import { politeByHost } from "./BackQueueRouter";
 import { naiveRoundRobinPrioritizer } from "./Prioritizer";
 import { backQueueSelector } from "./BackQueueSelector";
 import { URL } from "url";
@@ -21,7 +21,7 @@ export async function index(text: string) {
 	return text;
 }
 
-/** The hostname Cache */
+/** The host Cache */
 
 /** Links come to the front queue first...they are ordered by priority and are enqueued from the prioritizer into this
  * frontQueue. The frontQueue is a list of queues numbered 1 -> F who help with prioritization of the links.
@@ -45,12 +45,12 @@ export type FrontQueue = AsyncQueue<Link>[];
  * one is allowed per host and each queue gets it's own async "thread" (concurrency is what we'll use for the moment instead of
  * parallelization [although concurrency can actually enable parallelization]).
  * This back queue is dequeued from the fetcher. */
-export type BackQueue = Map<Hostname, AsyncQueue<Link>>;
+export type BackQueue = Map<Host, AsyncQueue<Link>>;
 
-/** The Hostname of a URL */
-export type Hostname = string;
-/** Tells the time of the last call for an item given the hostname. */
-export type HostnameTimeOfLastCallHeap = AsyncMap<Hostname, number>;
+/** The Host of a URL */
+export type Host = string;
+/** Tells the time of the last call for an item given the host. */
+export type HostTimeOfLastCallHeap = AsyncMap<Host, number>;
 
 export type URLFrontierSettings = {
 	/** This function sends a url from outside the URL Frontier into the frontQueue.
@@ -68,19 +68,19 @@ export type URLFrontierSettings = {
 	}): Promise<FrontQueue[number]>;
 	/** The number of different priorities allowed in the queue */
 	F: number;
-	/** The number of different backqueues allowed usually the same as the number of hostnames. */
+	/** The number of different backqueues allowed usually the same as the number of hosts. */
 	B: number;
 	/** This function is used to assign an item to a backQueue with Politeness guarantees.
 	 * Should return a member of the backqueue.
 	 * It MUST NOT handle enqueueing or dequeueing into one of the BackQueues */
 	backqueueRouter(context: {
 		backQueue: BackQueue;
-		hostname: Hostname;
+		host: Host;
 	}): Promise<ReturnType<BackQueue["get"]>>;
 	/** This function gets something from the back queue */
 	backqueueSelector(context: {
 		backQueue: BackQueue;
-		hostnameHeap: HostnameHeap;
+		hostHeap: HostHeap;
 		backQueueRouter: URLFrontierSettings["backqueueRouter"];
 	}): Promise<Link | undefined>;
 };
@@ -90,7 +90,7 @@ export const defaultURLFrontierSettings: URLFrontierSettings = {
 	biasedFrontQueueSelector: naiveRoundRobinSelector(),
 	F: 1,
 	B: 1000,
-	backqueueRouter: politeByHostname,
+	backqueueRouter: politeByHost,
 	backqueueSelector: backQueueSelector,
 } as const;
 
@@ -99,7 +99,7 @@ export class URLFrontier {
 	#frontQueue: FrontQueue = [];
 	settings: URLFrontierSettings = defaultURLFrontierSettings;
 	#awaitURLs = new AsyncMap<Link, Link>();
-	#hostnameHeap = new HostnameHeap();
+	#hostHeap = new HostHeap();
 	#incomingURLs = new AsyncQueue<Link>();
 	#stopped = false;
 	#frontierLinks = new Map<Link, Promise<Link>>();
@@ -192,10 +192,10 @@ export class URLFrontier {
 				frontQueue: this.#frontQueue,
 			});
 			const url = new URL(await frontQueue.dequeue());
-			this.#hostnameHeap.insertHostname(url.hostname);
+			this.#hostHeap.insertHost(url.host);
 			(
 				await this.settings.backqueueRouter({
-					hostname: url.hostname,
+					host: url.host,
 					backQueue: this.#backQueue,
 				})
 			)?.enqueue(url.href);
@@ -208,7 +208,7 @@ export class URLFrontier {
 			const url: Link | undefined = await this.settings.backqueueSelector({
 				backQueue: this.#backQueue,
 				backQueueRouter: this.settings.backqueueRouter,
-				hostnameHeap: this.#hostnameHeap,
+				hostHeap: this.#hostHeap,
 			});
 			if (!url) return;
 			this.#awaitURLs.put(url, url);

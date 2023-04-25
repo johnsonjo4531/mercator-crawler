@@ -9,3 +9,6 @@ release-minor:
 
 push-publish:
 	git push --all && npm publish
+
+go:
+	npm run build && node dist/examples/new-broken-example.js

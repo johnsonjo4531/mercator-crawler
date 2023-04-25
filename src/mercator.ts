@@ -58,18 +58,16 @@ export class Mercator<U> {
 
 	async seedURL(url: string) {
 		if (!this.#inFrontierCache.has(url)) {
-			this.#inFrontierCache.set(
-				url,
-				this.#settings.urlFrontier
-					.seedURL(url)
-					.then(({ url }) => {
-						return this.#getData(url);
-					})
-					.then((x) => {
-						this.#inFrontierCache.delete(url);
-						return x;
-					})
-			);
+			const result = this.#settings.urlFrontier
+				.seedURL(url)
+				.then(({ url }) => {
+					return this.#getData(url);
+				})
+				.then((x) => {
+					this.#inFrontierCache.delete(url);
+					return x;
+				});
+			this.#inFrontierCache.set(url, result);
 		}
 		return (
 			this.#inFrontierCache.get(url) ??

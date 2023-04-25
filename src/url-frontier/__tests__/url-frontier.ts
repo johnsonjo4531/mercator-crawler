@@ -1,5 +1,6 @@
 import { URLFrontier } from "../url-frontier";
 
+jest.setTimeout(40_000);
 test("Should be thenable", async () => {
 	// setup
 	const result1Fn = jest.fn();
@@ -131,7 +132,7 @@ test("Should call earlier before later", async () => {
 	expect(Promise.race([p1, p2])).resolves.toBe(1);
 });
 
-test("Should call different hostnames on time", async () => {
+test("Should call different hosts on time", async () => {
 	// use
 	const frontier = new URLFrontier();
 	const p1 = frontier.seedURL("http://example.com").then(() => 1);

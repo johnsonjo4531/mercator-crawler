@@ -1,15 +1,16 @@
 /**
  * General client module for making requests to other servers!
  * @module utils/client */
-import { WritableStream as readabilitySax } from "readabilitySAX";
 import * as htmlparser from "htmlparser2";
 import { Handler } from "htmlmetaparser";
-import got, { GotStream, Options } from "got";
+import got, { Options } from "got";
 import { Writable } from "stream";
 import { Thing } from "schema-dts";
 import { URL } from "url";
 import { decodeHTML } from "entities";
 import { Merge } from "./types/types";
+import * as Parser from "@postlight/parser";
+import magic from "stream-mmmagic";
 
 export type TypedLD<T, S = string> = Extract<
 	T,
@@ -67,10 +68,6 @@ function createMetaParser(
 	return new htmlparser.Parser(handler, { decodeEntities: true });
 }
 
-interface IReadabilitySaxReturn {
-	text: string;
-}
-
 /**
  * Scrapes an article by getting metadata, parsing its main content, and returns parsed markdown and metadata
  * @param {String} url
@@ -105,71 +102,56 @@ export async function scrapeMeta(
 			...(options.headers ?? {}),
 		},
 	});
-	const deflatedResponse = got.stream(url, options);
-	try {
-		const [articleBody, metadata] = await Promise.all([
-			// streaming main-content text extracter
-			new Promise<IReadabilitySaxReturn | undefined>((resolve, reject) => {
-				if (!options.articleBody) {
-					return resolve(undefined);
-				}
-				deflatedResponse
-					.on("error", reject)
-					.pipe(
-						new readabilitySax(
-							{
-								pageURL: url2.href,
-								type: "text",
-							},
-							(result: IReadabilitySaxReturn) => {
+	const stream = got.stream(url, { ...options });
+	const [mime] = await magic.promise(stream);
+	const mtype = typeof mime === "string" ? mime : mime.type;
+
+	const [articleBody, metadata] =
+		mtype === "text/html"
+			? await Promise.all([
+					Parser.parse(url2.href, { contentType: "text" })
+						.then((x) => x.content)
+						.catch((err) => {
+							if (!/Content.*not.*text/gi.test(err.message)) throw err;
+						}),
+					new Promise<WebPageMeta | undefined>((resolve, reject) => {
+						if (!options.metaData) {
+							return resolve(undefined);
+						}
+						const meta = createMetaParser(
+							url2.href,
+							function (err: any, result: any) {
+								if (err) return reject(err);
 								resolve(result);
 							}
-						)
-					)
-					.on("error", reject);
-			}),
-			// streaming metadata extracter
-			new Promise<WebPageMeta | undefined>((resolve, reject) => {
-				if (!options.metaData) {
-					return resolve(undefined);
-				}
-				const meta = createMetaParser(
-					url2.href,
-					function (err: any, result: any) {
-						if (err) return reject(err);
-						resolve(result);
-					}
-				);
-				deflatedResponse
-					.on("error", reject)
-					.pipe(
-						new Writable({
-							write: function (chunk, encoding, next) {
-								try {
-									meta.write(chunk);
-								} catch (err) {
-									reject(err);
-									meta.end();
-									return next(null);
-								}
-								next();
-							},
-						})
-					)
-					.on("error", reject)
-					.on("finish", () => {
-						meta.end();
-					});
-			}),
-		]);
+						);
+						got
+							.stream(url, options)
+							.on("error", reject)
+							.pipe(
+								new Writable({
+									write: function (chunk, encoding, next) {
+										try {
+											meta.write(chunk);
+										} catch (err) {
+											reject(err);
+											meta.end();
+											return next(null);
+										}
+										next();
+									},
+								})
+							)
+							.on("error", reject)
+							.on("finish", () => {
+								meta.end();
+							});
+					}),
+			  ])
+			: ["", undefined];
 
-		return {
-			metadata,
-			articleBody: !!articleBody ? decodeHTML(articleBody.text) : undefined,
-		};
-	} catch (err) {
-		console.error(err);
-		throw err;
-		// throw new Error("Error scraping article");
-	}
+	return {
+		metadata,
+		articleBody: articleBody?.trim() ?? "",
+	};
 }

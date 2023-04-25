@@ -1,14 +1,14 @@
 import { AsyncQueue } from "../utils/AsyncQueue";
 import { URLFrontierSettings } from "./url-frontier";
 
-export const politeByHostname: URLFrontierSettings["backqueueRouter"] = async ({
+export const politeByHost: URLFrontierSettings["backqueueRouter"] = async ({
 	backQueue,
-	hostname,
+	host,
 }) => {
-	let queue = backQueue.get(hostname);
+	let queue = backQueue.get(host);
 	if (!queue) {
 		queue = new AsyncQueue();
-		backQueue.set(hostname, queue);
+		backQueue.set(host, queue);
 	}
 	return queue;
 };

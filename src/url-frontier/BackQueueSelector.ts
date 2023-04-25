@@ -2,15 +2,15 @@ import { sleep } from "../utils/GTOR";
 import { URLFrontierSettings } from "./url-frontier";
 
 export const backQueueSelector: URLFrontierSettings["backqueueSelector"] =
-	async ({ backQueue, hostnameHeap, backQueueRouter }) => {
+	async ({ backQueue, hostHeap, backQueueRouter }) => {
 		while (true) {
-			const hostname = await hostnameHeap.next();
-			if (!hostname) return;
+			const host = await hostHeap.next();
+			if (!host) return;
 			const answer = await Promise.race([
-				(await backQueueRouter({ backQueue, hostname }))?.dequeue(),
+				(await backQueueRouter({ backQueue, host }))?.dequeue(),
 				sleep(0).then(() => null),
 			]);
 			if (answer) return answer;
-			hostnameHeap.deleteHostname(hostname);
+			hostHeap.deleteHost(host);
 		}
 	};
